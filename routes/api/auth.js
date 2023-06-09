@@ -31,7 +31,7 @@ router.post('/',[
         return res.status(400).json({ errors: errors.array() });
     }
     
-    const { email,password} = req.body;
+    const { email, password} = req.body;
     try{
         // see if user exit or not
         let user = await User.findOne({email});
@@ -49,15 +49,15 @@ router.post('/',[
         const payload = {
             user:
             { id: user.id}
-        }
+        };
 
         jwt.sign(
             payload,
             config.get('jwtSecret'),
-            {expiresIn:36000},
-            (err,Token)=>{
+            {expiresIn:'5 days'},
+            (err,token)=>{
                 if(err) throw err;
-                res.json({Token});
+                res.json({token});
             }
         );
 

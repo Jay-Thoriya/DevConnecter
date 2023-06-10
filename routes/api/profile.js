@@ -3,6 +3,8 @@ const router = express.Router();
 const auth = require("../../middleware/auth")
 const Profile = require("../../models/Profile")
 const User = require("../../models/User")
+const request = require("request")
+const config = require("config")
 const {check , validationResult} = require("express-validator")
 // @router  get api/profile/me
 // @desc    get current users profile
@@ -197,5 +199,26 @@ router.put('/experience',[ auth , [
         res.status(500).send("server Error")
     }
 });
+
+
+// @router  delete api/profile/experience/exp_id
+// @desc    delete experience from  profile
+// @access  private
+
+router.delete('/experience/:exp_id', auth, async (req,res)=>{
+    try {
+        const profile = await Profile.findOne({user:req.user.id});
+
+        //Get remove index
+        const removeIndex = profile.experience.map(item => item.id).indexOf(req.params.exp_id)
+        profile.experience.splice(removeIndex,1);
+        await profile.save();
+        res.send(profile);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("server Error")
+    }
+})
+
 
 module.exports = router;  

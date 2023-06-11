@@ -32,4 +32,19 @@ router.post('/',[auth , [ check('text','text is required').not().isEmpty()]], as
     
 });
 
+
+// @router  get api/post
+// @desc    get all post
+// @access  private
+
+router.get('/',auth,async(req,res) =>{
+    try{
+        const posts = await Post.find().sort({Date:-1})
+        res.json(posts);
+    }catch(err){
+        console.error(err.message);
+        res.status(500).send("Server Error")
+    }
+})
+
 module.exports = router; 

@@ -156,7 +156,7 @@ router.post('/comment/:id',[auth , [ check('text','text is required').not().isEm
     try {
     const user = await User.findById(req.user.id).select('-password');
     const post = await Post.findById(req.params.id);
-     
+    
     const newComment = new Post({
         text: req.body.text,
         name: user.name,
@@ -173,6 +173,39 @@ router.post('/comment/:id',[auth , [ check('text','text is required').not().isEm
     }
     
 });
+
+
+// @router  delete api/post/comment/:id/:comment_id
+// @desc    delete comment
+// @access  private
+
+router.delete('/comment/:id/comment_id',auth,async (req,res) =>{
+    try{
+        const post = await Post.findById(req.params.id);
+        const comment = post.comments.find(comment => comment.id === req.params.comment_id);
+        if(!comment){
+            return res.status(404).json({msg:"comment dose not exit"}) 
+        }
+        if(comment.user.toString() !== req.user.id){
+            return res.status(401).json({msg: "user not authorize"}); 
+        }
+        
+        const removeIndex =post.comments.map(comment => comment.user.toString()).indexOf(req.user.id);
+
+        post.comments.splice(removeIndex,1);
+
+        await post.save();
+        
+        res.json(post.comments);
+    }catch(err){
+        console.error(err.message);
+        if(err.kind === 'ObjectId'){
+            return res.status(404).json({msg:"Post not found"})
+        }
+        res.status(500).send("Server Error")
+    }
+});
+
 
 
 

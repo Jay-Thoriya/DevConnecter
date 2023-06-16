@@ -2,9 +2,11 @@ import React from 'react'
 
 const Register = () => {
   return (
+    <section className='container'>
     <div>
-    Register;
+    Register
     </div>
+    </section>
   )
 }
 
